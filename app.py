@@ -1340,4 +1340,4 @@ if __name__ == '__main__':
         init_db()
         print('Database initialized.')
     else:
-        app.run(host='0.0.0.0', port=5001, debug=True)
+        app.run(host=args.host, port=args.port, debug=args.debug)
