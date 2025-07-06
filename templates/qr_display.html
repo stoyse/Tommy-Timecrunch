@@ -1,0 +1,367 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .qr-display-container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 30px;
+    }
+    
+    .qr-card {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        overflow: hidden;
+        background: white;
+    }
+    
+    .qr-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+    }
+    
+    .qr-body {
+        padding: 40px;
+        text-align: center;
+    }
+    
+    .qr-code-container {
+        background: #f8f9fa;
+        border: 3px dashed #dee2e6;
+        border-radius: 15px;
+        padding: 40px;
+        margin: 30px 0;
+        min-height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        transition: all 0.3s ease;
+    }
+    
+    .qr-code-container.loaded {
+        border-color: #28a745;
+        background: #f8fff9;
+    }
+    
+    .qr-actions {
+        margin-top: 30px;
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .btn-qr {
+        border-radius: 25px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-qr:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    
+    .info-section {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 25px;
+        margin-top: 30px;
+    }
+    
+    .size-controls {
+        margin: 20px 0;
+    }
+    
+    .size-controls .btn-group {
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-radius: 25px;
+        overflow: hidden;
+    }
+    
+    .loading-spinner {
+        color: #667eea;
+    }
+    
+    .qr-info {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+        border-left: 4px solid #667eea;
+    }
+</style>
+
+<div class="qr-display-container">
+    <div class="qr-card">
+        <div class="qr-header">
+            <h2><i class="fas fa-qrcode me-3"></i>{{ hackathon.name }}</h2>
+            <p class="mb-0">Hackathon QR Code</p>
+        </div>
+        
+        <div class="qr-body">
+            <div class="mb-4">
+                <h4 class="text-primary">{{ hackathon.code }}</h4>
+                <p class="text-muted">Scan this QR code for quick access</p>
+            </div>
+            
+            <!-- QR Code Display Area -->
+            <div id="qr-code-display" class="qr-code-container">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin fa-3x mb-3"></i>
+                    <h5>Generating QR Code...</h5>
+                    <p class="text-muted">Please wait a moment</p>
+                </div>
+            </div>
+            
+            <!-- Size Controls -->
+            <div class="size-controls">
+                <label class="form-label">QR Code Size:</label>
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="qr-size" id="size-small" value="150">
+                    <label class="btn btn-outline-primary" for="size-small">Small</label>
+                    
+                    <input type="radio" class="btn-check" name="qr-size" id="size-medium" value="250" checked>
+                    <label class="btn btn-outline-primary" for="size-medium">Medium</label>
+                    
+                    <input type="radio" class="btn-check" name="qr-size" id="size-large" value="350">
+                    <label class="btn btn-outline-primary" for="size-large">Large</label>
+                    
+                    <input type="radio" class="btn-check" name="qr-size" id="size-xlarge" value="450">
+                    <label class="btn btn-outline-primary" for="size-xlarge">XL</label>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="qr-actions">
+                <button class="btn btn-success btn-qr" onclick="downloadQR('png')">
+                    <i class="fas fa-download me-2"></i>Download PNG
+                </button>
+                <button class="btn btn-info btn-qr" onclick="downloadQR('jpg')">
+                    <i class="fas fa-download me-2"></i>Download JPG
+                </button>
+                <button class="btn btn-primary btn-qr" onclick="generateQRCode()">
+                    <i class="fas fa-refresh me-2"></i>Regenerate
+                </button>
+                <button class="btn btn-secondary btn-qr" onclick="printQR()">
+                    <i class="fas fa-print me-2"></i>Print
+                </button>
+            </div>
+            
+            <!-- Information Section -->
+            <div class="info-section">
+                <h5><i class="fas fa-info-circle me-2"></i>How to Use</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="qr-info">
+                            <h6><i class="fas fa-mobile-alt me-2 text-primary"></i>For Participants</h6>
+                            <ul class="list-unstyled small">
+                                <li>• Save QR code to your phone</li>
+                                <li>• Show at event check-in</li>
+                                <li>• Quick access to event info</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="qr-info">
+                            <h6><i class="fas fa-users me-2 text-success"></i>For Organizers</h6>
+                            <ul class="list-unstyled small">
+                                <li>• Print for physical materials</li>
+                                <li>• Share on social media</li>
+                                <li>• Include in email signatures</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <a href="{{ url_for('dashboard_view') }}" class="btn btn-outline-secondary btn-qr">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add QRCode.js library -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script>
+    let currentQRCanvas = null;
+    let currentSize = 250;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Generate initial QR code
+        generateQRCode();
+        
+        // Add event listeners for size controls
+        document.querySelectorAll('input[name="qr-size"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                currentSize = parseInt(this.value);
+                generateQRCode();
+            });
+        });
+    });
+    
+    function generateQRCode() {
+        const hackathonCode = '{{ hackathon.code }}';
+        const displayArea = document.getElementById('qr-code-display');
+        
+        // Show loading state
+        displayArea.className = 'qr-code-container';
+        displayArea.innerHTML = `
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin fa-3x mb-3"></i>
+                <h5>Generating QR Code...</h5>
+                <p class="text-muted">Please wait a moment</p>
+            </div>
+        `;
+        
+        // Generate QR code
+        QRCode.toCanvas(hackathonCode, {
+            width: currentSize,
+            margin: 4,
+            color: {
+                dark: '#000000',
+                light: '#FFFFFF'
+            },
+            errorCorrectionLevel: 'M'
+        }, function (error, canvas) {
+            if (error) {
+                console.error('Error generating QR code:', error);
+                displayArea.innerHTML = `
+                    <div class="text-danger">
+                        <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+                        <h5>Error Generating QR Code</h5>
+                        <p>${error.message}</p>
+                        <button class="btn btn-primary" onclick="generateQRCode()">Try Again</button>
+                    </div>
+                `;
+            } else {
+                // Success - display the QR code
+                displayArea.className = 'qr-code-container loaded';
+                displayArea.innerHTML = '';
+                
+                // Style the canvas
+                canvas.style.borderRadius = '10px';
+                canvas.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+                canvas.style.background = 'white';
+                canvas.style.padding = '10px';
+                
+                displayArea.appendChild(canvas);
+                currentQRCanvas = canvas;
+                
+                // Add success message
+                const successMsg = document.createElement('div');
+                successMsg.className = 'mt-3 text-success';
+                successMsg.innerHTML = `
+                    <i class="fas fa-check-circle me-2"></i>
+                    <small>QR Code generated successfully!</small>
+                `;
+                displayArea.appendChild(successMsg);
+            }
+        });
+    }
+    
+    function downloadQR(format) {
+        if (!currentQRCanvas) {
+            alert('Please generate a QR code first');
+            return;
+        }
+        
+        const link = document.createElement('a');
+        const filename = `hackathon-{{ hackathon.code }}-qr.${format}`;
+        
+        if (format === 'png') {
+            link.href = currentQRCanvas.toDataURL('image/png');
+        } else if (format === 'jpg') {
+            // Create white background for JPG
+            const tempCanvas = document.createElement('canvas');
+            const ctx = tempCanvas.getContext('2d');
+            tempCanvas.width = currentQRCanvas.width;
+            tempCanvas.height = currentQRCanvas.height;
+            
+            // Fill with white background
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            // Draw QR code on top
+            ctx.drawImage(currentQRCanvas, 0, 0);
+            
+            link.href = tempCanvas.toDataURL('image/jpeg', 0.95);
+        }
+        
+        link.download = filename;
+        link.click();
+        
+        // Show success message
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-success alert-dismissible fade show position-fixed';
+        alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999;';
+        alert.innerHTML = `
+            <i class="fas fa-download me-2"></i>QR Code downloaded as ${filename}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alert);
+        
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.remove();
+            }
+        }, 3000);
+    }
+    
+    function printQR() {
+        if (!currentQRCanvas) {
+            alert('Please generate a QR code first');
+            return;
+        }
+        
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Print QR Code - {{ hackathon.code }}</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            text-align: center;
+                            padding: 40px;
+                        }
+                        .qr-print {
+                            margin: 20px auto;
+                            border: 2px solid #ddd;
+                            padding: 20px;
+                            display: inline-block;
+                            border-radius: 10px;
+                        }
+                        @media print {
+                            body { margin: 0; }
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>{{ hackathon.name }}</h1>
+                    <h2>Code: {{ hackathon.code }}</h2>
+                    <div class="qr-print">
+                        <img src="${currentQRCanvas.toDataURL()}" alt="QR Code" />
+                    </div>
+                    <p>Scan this QR code to access the hackathon</p>
+                    <button class="no-print" onclick="window.print()">Print</button>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+        
+        // Auto-print after a short delay
+        setTimeout(() => {
+            printWindow.print();
+        }, 500);
+    }
+</script>
+{% endblock %}

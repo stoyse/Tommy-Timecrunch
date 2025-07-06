@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .settings-header {
+        background: linear-gradient(135deg, #3B4371 0%, #F3904F 100%);
+        padding: 25px;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .settings-card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .settings-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    
+    .form-control, .form-select {
+        border-radius: 10px;
+        padding: 12px;
+        border: 1px solid #ced4da;
+        transition: all 0.3s ease;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+    
+    .settings-nav .nav-link {
+        padding: 12px 15px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        color: #495057;
+        transition: all 0.3s ease;
+    }
+    
+    .settings-nav .nav-link:hover {
+        background-color: rgba(59, 67, 113, 0.05);
+    }
+    
+    .settings-nav .nav-link.active {
+        color: #fff;
+        background: linear-gradient(135deg, #3B4371 0%, #F3904F 100%);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .settings-nav .nav-link i {
+        width: 24px;
+        text-align: center;
+        margin-right: 8px;
+    }
+    
+    .btn-save {
+        background: linear-gradient(135deg, #3B4371 0%, #F3904F 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 25px;
+        font-weight: 500;
+        color: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-save:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(0,0,0,0.15);
+    }
+    
+    .settings-icon {
+        font-size: 1.2rem;
+        margin-right: 8px;
+        color: #3B4371;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="settings-header">
+        <h2 class="mb-0"><i class="fas fa-cog me-2"></i> Settings</h2>
+        <p class="mb-0 mt-2">Configure your account and application preferences</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-3">
+            <div class="settings-nav nav flex-column nav-pills mb-4" id="settings-tab" role="tablist">
+                <button class="nav-link active" id="general-tab" data-bs-toggle="pill" data-bs-target="#general" type="button" role="tab">
+                    <i class="fas fa-sliders-h"></i> General
+                </button>
+                <button class="nav-link" id="email-tab" data-bs-toggle="pill" data-bs-target="#email" type="button" role="tab">
+                    <i class="fas fa-envelope"></i> Email Settings
+                </button>
+                <button class="nav-link" id="notifications-tab" data-bs-toggle="pill" data-bs-target="#notifications" type="button" role="tab">
+                    <i class="fas fa-bell"></i> Notifications
+                </button>
+                <button class="nav-link" id="security-tab" data-bs-toggle="pill" data-bs-target="#security" type="button" role="tab">
+                    <i class="fas fa-shield-alt"></i> Security
+                </button>
+                <button class="nav-link" id="api-tab" data-bs-toggle="pill" data-bs-target="#api" type="button" role="tab">
+                    <i class="fas fa-code"></i> API Keys
+                </button>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="tab-content" id="settings-tabContent">
+                <!-- General Settings -->
+                <div class="tab-pane fade show active" id="general" role="tabpanel">
+                    <div class="card settings-card mb-4">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0"><i class="fas fa-sliders-h settings-icon"></i> General Settings</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form method="POST" action="{{ url_for('update_general_settings') }}">
+                                <div class="mb-4">
+                                    <label for="timezone" class="form-label">Timezone</label>
+                                    <select class="form-select" id="timezone" name="timezone">
+                                        <option value="UTC">UTC</option>
+                                        <option value="EST">Eastern Time (EST)</option>
+                                        <option value="CST">Central Time (CST)</option>
+                                        <option value="MST">Mountain Time (MST)</option>
+                                        <option value="PST">Pacific Time (PST)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="date_format" class="form-label">Date Format</label>
+                                    <select class="form-select" id="date_format" name="date_format">
+                                        <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                                        <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="dark_mode" name="dark_mode">
+                                        <label class="form-check-label" for="dark_mode">Dark Mode</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="submit" class="btn btn-save">
+                                        <i class="fas fa-save me-2"></i> Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Email Settings -->
+                <div class="tab-pane fade" id="email" role="tabpanel">
+                    <div class="card settings-card mb-4">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0"><i class="fas fa-envelope settings-icon"></i> Email Configuration</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form method="POST" action="{{ url_for('update_email_settings') }}">
+                                <div class="mb-4">
+                                    <label for="smtp_server" class="form-label">SMTP Server</label>
+                                    <input type="text" class="form-control" id="smtp_server" name="smtp_server" value="{{ email_settings.smtp_server }}">
+                                </div>
+                                
+                                <div class="row mb-4">
+                                    <div class="col">
+                                        <label for="smtp_port" class="form-label">SMTP Port</label>
+                                        <input type="number" class="form-control" id="smtp_port" name="smtp_port" value="{{ email_settings.smtp_port }}">
+                                    </div>
+                                    <div class="col">
+                                        <label for="smtp_security" class="form-label">Security</label>
+                                        <select class="form-select" id="smtp_security" name="smtp_security">
+                                            <option value="tls" {% if email_settings.smtp_security == 'tls' %}selected{% endif %}>TLS</option>
+                                            <option value="ssl" {% if email_settings.smtp_security == 'ssl' %}selected{% endif %}>SSL</option>
+                                            <option value="none" {% if email_settings.smtp_security == 'none' %}selected{% endif %}>None</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="smtp_username" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="smtp_username" name="smtp_username" value="{{ email_settings.smtp_username }}">
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="smtp_password" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="smtp_password" name="smtp_password" value="{{ email_settings.smtp_password }}">
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="default_sender" class="form-label">Default Sender Email</label>
+                                    <input type="email" class="form-control" id="default_sender" name="default_sender" value="{{ email_settings.default_sender }}">
+                                </div>
+                                
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="button" class="btn btn-outline-secondary me-2">
+                                        <i class="fas fa-vial me-2"></i> Test Connection
+                                    </button>
+                                    <button type="submit" class="btn btn-save">
+                                        <i class="fas fa-save me-2"></i> Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notification Settings -->
+                <div class="tab-pane fade" id="notifications" role="tabpanel">
+                    <div class="card settings-card mb-4">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0"><i class="fas fa-bell settings-icon"></i> Notification Preferences</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form method="POST" action="{{ url_for('update_notification_settings') }}">
+                                <div class="mb-4">
+                                    <h6 class="mb-3">Email Notifications</h6>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="notify_registrations" name="notify_registrations" checked>
+                                        <label class="form-check-label" for="notify_registrations">New participant registrations</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="notify_flight_updates" name="notify_flight_updates" checked>
+                                        <label class="form-check-label" for="notify_flight_updates">Flight information updates</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="notify_checklist" name="notify_checklist" checked>
+                                        <label class="form-check-label" for="notify_checklist">Checklist item changes</label>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="notify_housing" name="notify_housing">
+                                        <label class="form-check-label" for="notify_housing">Housing updates</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h6 class="mb-3">System Notifications</h6>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="notify_system_errors" name="notify_system_errors" checked>
+                                        <label class="form-check-label" for="notify_system_errors">System errors</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="notify_security" name="notify_security" checked>
+                                        <label class="form-check-label" for="notify_security">Security alerts</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="submit" class="btn btn-save">
+                                        <i class="fas fa-save me-2"></i> Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security Settings -->
+                <div class="tab-pane fade" id="security" role="tabpanel">
+                    <div class="card settings-card mb-4">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0"><i class="fas fa-shield-alt settings-icon"></i> Security Settings</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form method="POST" action="{{ url_for('update_security_settings') }}">
+                                <div class="mb-4">
+                                    <label for="current_password" class="form-label">Current Password</label>
+                                    <input type="password" class="form-control" id="current_password" name="current_password">
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="new_password" class="form-label">New Password</label>
+                                    <input type="password" class="form-control" id="new_password" name="new_password">
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="confirm_password" class="form-label">Confirm New Password</label>
+                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                                </div>
+                                
+                                <hr class="my-4">
+                                
+                                <div class="mb-4">
+                                    <h6 class="mb-3">Two-Factor Authentication</h6>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="enable_2fa" name="enable_2fa">
+                                        <label class="form-check-label" for="enable_2fa">Enable Two-Factor Authentication</label>
+                                    </div>
+                                    <small class="form-text text-muted">Enhance account security by requiring a second verification step during login.</small>
+                                </div>
+                                
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="submit" class="btn btn-save">
+                                        <i class="fas fa-save me-2"></i> Update Security Settings
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- API Settings -->
+                <div class="tab-pane fade" id="api" role="tabpanel">
+                    <div class="card settings-card mb-4">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0"><i class="fas fa-code settings-icon"></i> API Keys</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="mb-4">
+                                <label for="api_key" class="form-label">Current API Key</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="api_key" value="************" readonly>
+                                    <button class="btn btn-outline-secondary" type="button" id="show-key">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-outline-secondary" type="button" id="copy-key">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <button class="btn btn-outline-primary" type="button" id="generate-key">
+                                    <i class="fas fa-sync-alt me-2"></i> Generate New API Key
+                                </button>
+                                <small class="d-block mt-2 text-danger">Warning: This will invalidate your current API key</small>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h6 class="mb-3">API Usage</h6>
+                                <div class="progress mb-2" style="height: 10px;">
+                                    <div class="progress-bar" role="progressbar" style="width: 35%;" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <small class="form-text text-muted">3,500 / 10,000 requests this month</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .create-header {
+        background: linear-gradient(135deg, #43C6AC 0%, #191654 100%);
+        padding: 30px;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .create-card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .create-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    
+    .form-control, .form-select {
+        border-radius: 10px;
+        padding: 12px;
+        border: 1px solid #ced4da;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #43C6AC;
+        box-shadow: 0 0 0 0.25rem rgba(67, 198, 172, 0.25);
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+    
+    .btn-create {
+        background: linear-gradient(135deg, #43C6AC 0%, #191654 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 25px;
+        font-weight: 500;
+        color: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-create:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(0,0,0,0.15);
+    }
+    
+    .progress-stepper {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+    }
+    
+    .step {
+        text-align: center;
+        position: relative;
+        width: 33.33%;
+    }
+    
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        color: #6c757d;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .step.active .step-number {
+        background: linear-gradient(135deg, #43C6AC 0%, #191654 100%);
+        color: white;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    .step.completed .step-number {
+        background: #28a745;
+        color: white;
+    }
+    
+    .step-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    .step.active .step-label {
+        color: #191654;
+        font-weight: 600;
+    }
+    
+    .step.completed .step-label {
+        color: #28a745;
+    }
+    
+    .step-line {
+        position: absolute;
+        top: 20px;
+        height: 2px;
+        background-color: #e9ecef;
+        width: calc(100% - 40px);
+        left: calc(50% + 20px);
+    }
+    
+    .step:last-child .step-line {
+        display: none;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="create-header">
+        <h2 class="mb-2"><i class="fas fa-rocket me-2"></i> Create New Hackathon</h2>
+        <p class="mb-0">Set up your event and start inviting participants</p>
+    </div>
+    
+    <div class="progress-stepper">
+        <div class="step active">
+            <div class="step-number">1</div>
+            <div class="step-label">Basic Info</div>
+            <div class="step-line"></div>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-label">Details & Rules</div>
+            <div class="step-line"></div>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-label">Finalize</div>
+        </div>
+    </div>
+    
+    <div class="card create-card">
+        <div class="card-body p-4">
+            <form method="POST" action="{{ url_for('create_hackathon') }}" id="createHackathonForm">
+                <!-- Step 1: Basic Info (visible by default) -->
+                <div id="step1" class="step-pane">
+                    <div class="mb-4">
+                        <label for="name" class="form-label">Hackathon Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                        <small class="form-text text-muted">Choose a memorable name for your hackathon</small>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="start_date" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" name="location" required>
+                        <small class="form-text text-muted">Where will your hackathon take place?</small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="max_participants" class="form-label">Maximum Number of Participants</label>
+                        <input type="number" class="form-control" id="max_participants" name="max_participants" required min="1">
+                    </div>
+                    
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-create" id="nextToStep2">
+                            Continue <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Details & Rules (hidden initially) -->
+                <div id="step2" class="step-pane" style="display: none;">
+                    <div class="mb-4">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                        <small class="form-text text-muted">Describe your hackathon and what participants can expect</small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="prize_pool" class="form-label">Prize Pool</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="prize_pool" name="prize_pool" required min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="rules" class="form-label">Rules & Guidelines</label>
+                        <textarea class="form-control" id="rules" name="rules" rows="5" required></textarea>
+                        <small class="form-text text-muted">Set clear rules for your hackathon participants</small>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" id="backToStep1">
+                            <i class="fas fa-arrow-left me-2"></i> Back
+                        </button>
+                        <button type="button" class="btn btn-create" id="nextToStep3">
+                            Continue <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Finalize (hidden initially) -->
+                <div id="step3" class="step-pane" style="display: none;">
+                    <div class="mb-4">
+                        <label for="contact_email" class="form-label">Contact Email</label>
+                        <input type="email" class="form-control" id="contact_email" name="contact_email" required>
+                        <small class="form-text text-muted">This email will be displayed to participants for inquiries</small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title">Access Code</h6>
+                                <p class="card-text">A unique code will be generated for your hackathon. Participants will use this to register.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                            <label class="form-check-label" for="terms">
+                                I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms & Conditions</a>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" id="backToStep2">
+                            <i class="fas fa-arrow-left me-2"></i> Back
+                        </button>
+                        <button type="submit" class="btn btn-create">
+                            <i class="fas fa-check-circle me-2"></i> Create Hackathon
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Terms & Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Terms & Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>By creating a hackathon on Tommy Timecrunch, you agree to the following terms and conditions:</p>
+                <ol>
+                    <li>You are responsible for organizing and managing your hackathon.</li>
+                    <li>You agree to handle participant data in accordance with privacy regulations.</li>
+                    <li>Tommy Timecrunch is not responsible for any disputes that may arise during your event.</li>
+                    <li>You will provide a safe and inclusive environment for all participants.</li>
+                </ol>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const nextToStep2 = document.getElementById('nextToStep2');
+        const backToStep1 = document.getElementById('backToStep1');
+        const nextToStep3 = document.getElementById('nextToStep3');
+        const backToStep2 = document.getElementById('backToStep2');
+        const steps = document.querySelectorAll('.step');
+        
+        // Navigation functions
+        nextToStep2.addEventListener('click', function() {
+            // Validate Step 1
+            const name = document.getElementById('name').value;
+            const start = document.getElementById('start_date').value;
+            const end = document.getElementById('end_date').value;
+            const location = document.getElementById('location').value;
+            const max = document.getElementById('max_participants').value;
+            
+            if (!name || !start || !end || !location || !max) {
+                alert('Please fill out all required fields.');
+                return;
+            }
+            
+            // Move to Step 2
+            step1.style.display = 'none';
+            step2.style.display = 'block';
+            steps[0].classList.remove('active');
+            steps[0].classList.add('completed');
+            steps[1].classList.add('active');
+        });
+        
+        backToStep1.addEventListener('click', function() {
+            step2.style.display = 'none';
+            step1.style.display = 'block';
+            steps[1].classList.remove('active');
+            steps[0].classList.remove('completed');
+            steps[0].classList.add('active');
+        });
+        
+        nextToStep3.addEventListener('click', function() {
+            // Validate Step 2
+            const description = document.getElementById('description').value;
+            const prizePool = document.getElementById('prize_pool').value;
+            const rules = document.getElementById('rules').value;
+            
+            if (!description || !prizePool || !rules) {
+                alert('Please fill out all required fields.');
+                return;
+            }
+            
+            // Move to Step 3
+            step2.style.display = 'none';
+            step3.style.display = 'block';
+            steps[1].classList.remove('active');
+            steps[1].classList.add('completed');
+            steps[2].classList.add('active');
+        });
+        
+        backToStep2.addEventListener('click', function() {
+            step3.style.display = 'none';
+            step2.style.display = 'block';
+            steps[2].classList.remove('active');
+            steps[1].classList.remove('completed');
+            steps[1].classList.add('active');
+        });
+    });
+</script>
+{% endblock %}

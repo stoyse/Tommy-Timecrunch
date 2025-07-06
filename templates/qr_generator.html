@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .qr-generator-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+    }
+    
+    .qr-card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        margin-bottom: 25px;
+        overflow: hidden;
+    }
+    
+    .qr-card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .qr-display-area {
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        padding: 30px;
+        text-align: center;
+        min-height: 280px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+    
+    .qr-controls {
+        background: white;
+        padding: 25px;
+    }
+    
+    .form-floating {
+        margin-bottom: 15px;
+    }
+    
+    .btn-generate {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 30px;
+        padding: 12px 30px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-generate:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .preset-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .preset-btn {
+        border-radius: 20px;
+        border: 1px solid #dee2e6;
+        background: white;
+        color: #495057;
+        font-size: 0.85rem;
+        padding: 5px 15px;
+        transition: all 0.2s ease;
+    }
+    
+    .preset-btn:hover {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    
+    .download-options {
+        margin-top: 20px;
+        display: none;
+    }
+    
+    .size-option {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .size-option:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .qr-placeholder {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+</style>
+
+<div class="qr-generator-container">
+    <div class="text-center mb-4">
+        <h2><i class="fas fa-qrcode me-2"></i> QR Code Generator</h2>
+        <p class="text-muted">Generate QR codes for text, URLs, or any data</p>
+    </div>
+    
+    <div class="row">
+        <!-- Generator Controls -->
+        <div class="col-md-6">
+            <div class="qr-card">
+                <div class="qr-card-header">
+                    <h5 class="mb-0"><i class="fas fa-cogs me-2"></i> Generate QR Code</h5>
+                </div>
+                <div class="qr-controls">
+                    <!-- Preset buttons -->
+                    <div class="preset-buttons">
+                        <button class="btn preset-btn" onclick="setPreset('{{ request.url_root }}')">
+                            <i class="fas fa-home me-1"></i> Website
+                        </button>
+                        <button class="btn preset-btn" onclick="setPreset('Hello, World!')">
+                            <i class="fas fa-comment me-1"></i> Text
+                        </button>
+                        <button class="btn preset-btn" onclick="setPreset('mailto:info@hackathon.com')">
+                            <i class="fas fa-envelope me-1"></i> Email
+                        </button>
+                        <button class="btn preset-btn" onclick="setPreset('tel:+1234567890')">
+                            <i class="fas fa-phone me-1"></i> Phone
+                        </button>
+                        {% if hackathon %}
+                        <button class="btn preset-btn" onclick="setPreset('{{ hackathon.code }}')">
+                            <i class="fas fa-hashtag me-1"></i> Event Code
+                        </button>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Input form -->
+                    <form id="qr-form">
+                        <div class="form-floating">
+                            <textarea class="form-control" id="qr-text" placeholder="Enter text or URL" style="height: 100px" required></textarea>
+                            <label for="qr-text">Text or URL to encode</label>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="qr-size">
+                                        <option value="150">Small (150px)</option>
+                                        <option value="200" selected>Medium (200px)</option>
+                                        <option value="300">Large (300px)</option>
+                                        <option value="400">Extra Large (400px)</option>
+                                    </select>
+                                    <label for="qr-size">QR Code Size</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="qr-margin">
+                                        <option value="1">Thin (1)</option>
+                                        <option value="2" selected>Normal (2)</option>
+                                        <option value="3">Thick (3)</option>
+                                        <option value="4">Extra Thick (4)</option>
+                                    </select>
+                                    <label for="qr-margin">Border Margin</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="color" class="form-control form-control-color" id="qr-color" value="#000000">
+                                    <label for="qr-color">QR Code Color</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="color" class="form-control form-control-color" id="qr-background" value="#ffffff">
+                                    <label for="qr-background">Background Color</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-generate text-white w-100">
+                            <i class="fas fa-qrcode me-2"></i> Generate QR Code
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- QR Display Area -->
+        <div class="col-md-6">
+            <div class="qr-card">
+                <div class="qr-card-header">
+                    <h5 class="mb-0"><i class="fas fa-eye me-2"></i> Preview & Download</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="qr-display-area" id="qr-display">
+                        <div class="qr-placeholder">
+                            <i class="fas fa-qrcode fa-3x mb-3 text-muted"></i>
+                            <p>Your QR code will appear here</p>
+                            <small class="text-muted">Enter text or URL and click Generate</small>
+                        </div>
+                    </div>
+                    
+                    <div class="download-options p-3" id="download-section">
+                        <h6 class="mb-3"><i class="fas fa-download me-2"></i> Download Options</h6>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <button class="btn btn-outline-success btn-sm w-100" onclick="downloadQR('png')">
+                                    <i class="fas fa-file-image me-1"></i> PNG
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-outline-primary btn-sm w-100" onclick="downloadQR('jpg')">
+                                    <i class="fas fa-file-image me-1"></i> JPG
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Access Info -->
+    <div class="qr-card">
+        <div class="card-body">
+            <h6><i class="fas fa-info-circle me-2"></i> Quick Tips</h6>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-unstyled small text-muted">
+                        <li><i class="fas fa-check text-success me-2"></i> URLs: Start with http:// or https://</li>
+                        <li><i class="fas fa-check text-success me-2"></i> Email: Use mailto:email@domain.com</li>
+                        <li><i class="fas fa-check text-success me-2"></i> Phone: Use tel:+1234567890</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-unstyled small text-muted">
+                        <li><i class="fas fa-check text-success me-2"></i> WiFi: WIFI:T:WPA;S:NetworkName;P:Password;;</li>
+                        <li><i class="fas fa-check text-success me-2"></i> SMS: sms:+1234567890:Message text</li>
+                        <li><i class="fas fa-check text-success me-2"></i> Plain text works for any content</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add QRCode.js library -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script>
+    let currentQRCanvas = null;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Form submission
+        document.getElementById('qr-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateQRCode();
+        });
+        
+        // Auto-generate on input change (with debounce)
+        let timeout;
+        document.getElementById('qr-text').addEventListener('input', function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(generateQRCode, 500);
+        });
+        
+        // Auto-generate on option change
+        ['qr-size', 'qr-margin', 'qr-color', 'qr-background'].forEach(id => {
+            document.getElementById(id).addEventListener('change', generateQRCode);
+        });
+    });
+    
+    function setPreset(text) {
+        document.getElementById('qr-text').value = text;
+        generateQRCode();
+    }
+    
+    function generateQRCode() {
+        const text = document.getElementById('qr-text').value.trim();
+        const size = parseInt(document.getElementById('qr-size').value);
+        const margin = parseInt(document.getElementById('qr-margin').value);
+        const color = document.getElementById('qr-color').value;
+        const background = document.getElementById('qr-background').value;
+        const displayArea = document.getElementById('qr-display');
+        
+        if (!text) {
+            displayArea.innerHTML = `
+                <div class="qr-placeholder">
+                    <i class="fas fa-qrcode fa-3x mb-3 text-muted"></i>
+                    <p>Your QR code will appear here</p>
+                    <small class="text-muted">Enter text or URL and click Generate</small>
+                </div>
+            `;
+            document.getElementById('download-section').style.display = 'none';
+            return;
+        }
+        
+        // Clear display area
+        displayArea.innerHTML = '';
+        
+        // Generate QR code
+        QRCode.toCanvas(displayArea, text, {
+            width: size,
+            margin: margin,
+            color: {
+                dark: color,
+                light: background
+            }
+        }, function (error, canvas) {
+            if (error) {
+                console.error('Error generating QR code:', error);
+                displayArea.innerHTML = `
+                    <div class="text-danger">
+                        <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                        <p>Error generating QR code</p>
+                        <small>${error.message}</small>
+                    </div>
+                `;
+                document.getElementById('download-section').style.display = 'none';
+            } else {
+                currentQRCanvas = canvas;
+                canvas.style.borderRadius = '10px';
+                canvas.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+                document.getElementById('download-section').style.display = 'block';
+            }
+        });
+    }
+    
+    function downloadQR(format) {
+        if (!currentQRCanvas) {
+            alert('Please generate a QR code first');
+            return;
+        }
+        
+        const link = document.createElement('a');
+        const text = document.getElementById('qr-text').value.trim();
+        const filename = `qr-code-${Date.now()}.${format}`;
+        
+        if (format === 'png') {
+            link.href = currentQRCanvas.toDataURL('image/png');
+        } else if (format === 'jpg') {
+            link.href = currentQRCanvas.toDataURL('image/jpeg', 0.9);
+        }
+        
+        link.download = filename;
+        link.click();
+    }
+</script>
+{% endblock %}

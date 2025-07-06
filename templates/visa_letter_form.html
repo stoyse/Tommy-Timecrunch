@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .visa-header {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        padding: 25px;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .visa-card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .visa-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    
+    .form-control {
+        border-radius: 10px;
+        padding: 12px;
+        border: 1px solid #ced4da;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #11998e;
+        box-shadow: 0 0 0 0.25rem rgba(17, 153, 142, 0.25);
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+    
+    .visa-btn {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 25px;
+        font-weight: 500;
+        color: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .visa-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(0,0,0,0.15);
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="visa-header">
+        <h2 class="mb-0"><i class="fas fa-passport me-2"></i> Visa Letter Request</h2>
+        <p class="mb-0 mt-2">Please provide the necessary information to generate your visa support letter</p>
+    </div>
+    
+    <div class="card visa-card">
+        <div class="card-body p-4">
+            <form method="POST">
+                <div class="mb-4">
+                    <label for="full_name" class="form-label">Full Name (as in passport)</label>
+                    <input type="text" class="form-control" id="full_name" name="full_name" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="passport_number" class="form-label">Passport Number</label>
+                    <input type="text" class="form-control" id="passport_number" name="passport_number" required>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label for="country_of_origin" class="form-label">Country of Origin</label>
+                        <input type="text" class="form-control" id="country_of_origin" name="country_of_origin" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="date_of_birth" class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" required>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="address" class="form-label">Home Address</label>
+                    <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="visa-btn">
+                        <i class="fas fa-paper-plane me-2"></i> Submit Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

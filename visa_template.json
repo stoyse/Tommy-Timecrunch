@@ -1,0 +1,4 @@
+{
+  "template_html": "<div style='color:#1a237e;font-size:18px;'><b>To Whom It May Concern,</b><br><br>This letter is to confirm that <span style='color:#388e3c;'>{{ legal_name }}</span> is invited to participate in our hackathon.<br><br><b>Date of Birth:</b> {{ dob }}<br><b>Citizenship:</b> {{ citizenship }}<br><b>Address:</b> {{ address }}<br><br>If you have any questions, contact us at <b>{{ contact_email }}</b>.<br><br><span style='color:#d32f2f;'>Sincerely, The Tommy Timecrunch Team</span></div>",
+  "header_image": ""
+}

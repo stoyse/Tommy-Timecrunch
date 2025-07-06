@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visa Support Letter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background-color: #4A00E0;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .content {
+            background-color: #ffffff;
+            padding: 30px;
+            border-left: 1px solid #e0e0e0;
+            border-right: 1px solid #e0e0e0;
+        }
+        
+        .footer {
+            background-color: #f7f7f7;
+            padding: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            border-radius: 0 0 5px 5px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .button {
+            display: inline-block;
+            background-color: #4A00E0;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .logo {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+        
+        .attachment-info {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-left: 4px solid #4A00E0;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <img src="https://example.com/logo.png" alt="Logo" class="logo">
+            <h2>Your Visa Support Letter</h2>
+        </div>
+        
+        <div class="content">
+            <p>Dear {{ recipient_name }},</p>
+            
+            <p>Thank you for requesting a visa support letter for {{ hackathon_name }}. Please find your official visa support letter attached to this email.</p>
+            
+            <div class="attachment-info">
+                <p><strong>Attachment:</strong> {{ filename }}</p>
+                <p><strong>Format:</strong> PDF document</p>
+            </div>
+            
+            <p>This letter confirms your participation in {{ hackathon_name }} from {{ hackathon_start_date }} to {{ hackathon_end_date }} at {{ hackathon_location }}.</p>
+            
+            <p>Please print this letter and include it with your visa application materials. If you need any additional documents or have questions about the visa application process, please contact us immediately.</p>
+            
+            <p><strong>Important:</strong> Start your visa application process as soon as possible to ensure you have sufficient time to receive your visa before the event.</p>
+            
+            <a href="{{ dashboard_link }}" class="button">View Dashboard</a>
+            
+            <p>Best regards,<br>
+            {{ organizer_name }}<br>
+            {{ organizer_title }}<br>
+            {{ hackathon_name }} Organizing Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; {{ current_year }} {{ hackathon_name }}. All rights reserved.</p>
+            <p>If you have any questions, please contact us at {{ contact_email }}</p>
+        </div>
+    </div>
+</body>
+</html>

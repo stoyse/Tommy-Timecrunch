@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .housing-header {
+        background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+        padding: 25px;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .housing-card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .housing-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    
+    .housing-image {
+        width: 100%;
+        border-radius: 15px;
+        overflow: hidden;
+        max-height: 400px;
+        object-fit: cover;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: #2193b0;
+        margin-bottom: 5px;
+    }
+    
+    .info-value {
+        margin-bottom: 20px;
+    }
+    
+    .action-btn {
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .map-container {
+        height: 300px;
+        border-radius: 15px;
+        overflow: hidden;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="housing-header">
+        <h2 class="mb-0"><i class="fas fa-home me-2"></i> {{ house.name }}</h2>
+        <p class="mb-0 mt-2">Housing details and management</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card housing-card mb-4">
+                <div class="card-body p-4">
+                    {% if house.image_url %}
+                    <img src="{{ house.image_url }}" alt="{{ house.name }}" class="housing-image mb-4">
+                    {% endif %}
+                    
+                    <div class="info-label">Description</div>
+                    <div class="info-value">{{ house.description }}</div>
+                    
+                    <div class="info-label">Address</div>
+                    <div class="info-value">{{ house.address }}</div>
+                    
+                    <div class="info-label">Capacity</div>
+                    <div class="info-value">{{ house.capacity }} participants</div>
+                    
+                    <div class="info-label">Added on</div>
+                    <div class="info-value">{{ house.created_at.strftime('%B %d, %Y') }}</div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('dashboard_view', code=hackathon.code) }}" class="btn btn-outline-secondary action-btn">
+                            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                        </a>
+                        <div>
+                            <a href="{{ url_for('qr_scanner') }}" class="btn btn-outline-info action-btn me-2">
+                                <i class="fas fa-qrcode me-2"></i> Scan QR Code
+                            </a>
+                            <a href="{{ url_for('housing.edit_housing', housing_id=house.id) }}" class="btn btn-outline-primary action-btn me-2">
+                                <i class="fas fa-edit me-2"></i> Edit
+                            </a>
+                            <button type="button" class="btn btn-outline-danger action-btn" data-bs-toggle="modal" data-bs-target="#deleteHousingModal">
+                                <i class="fas fa-trash-alt me-2"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-5">
+            <div class="card housing-card mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="fas fa-map-marked-alt me-2"></i> Location</h5>
+                </div>
+                <div class="card-body">
+                    <div class="map-container" id="map"></div>
+                    <div class="text-center mt-3">
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ house.address|urlencode }}" 
+                           class="btn btn-outline-primary" target="_blank">
+                            <i class="fas fa-external-link-alt me-2"></i> Open in Google Maps
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card housing-card">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i> Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="fs-2 fw-bold text-primary">{{ assigned_count }}</div>
+                            <div class="text-muted small">Assigned Participants</div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="fs-2 fw-bold text-success">{{ house.capacity if house.capacity else '∞' }}</div>
+                            <div class="text-muted small">Total Capacity</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteHousingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete <strong>{{ house.name }}</strong>?</p>
+                    <p class="text-danger"><small>This action cannot be undone.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{{ url_for('housing.delete_housing', housing_id=house.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash-alt me-2"></i> Delete Housing
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Basic map initialization (requires you to add Google Maps API script)
+    // You can replace this with a different mapping solution if preferred
+    function initMap() {
+        const address = "{{ house.address }}";
+        const geocoder = new google.maps.Geocoder();
+        
+        geocoder.geocode({ 'address': address }, function(results, status) {
+            if (status === 'OK') {
+                const map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 15,
+                    center: results[0].geometry.location
+                });
+                
+                new google.maps.Marker({
+                    map: map,
+                    position: results[0].geometry.location
+                });
+            } else {
+                document.getElementById('map').innerHTML = 
+                    '<div class="alert alert-warning">Could not load map for this address.</div>';
+            }
+        });
+    }
+</script>
+
+<!-- Add Google Maps API script with your API key if you want to use the map feature -->
+<!-- <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script> -->
+{% endblock %}

@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .editor-header {
+        background: linear-gradient(135deg, #4A00E0 0%, #8E2DE2 100%);
+        padding: 25px;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .editor-card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .editor-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    
+    .variable-pill {
+        display: inline-block;
+        background-color: #e9ecef;
+        color: #495057;
+        padding: 5px 12px;
+        border-radius: 20px;
+        margin: 5px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+    }
+    
+    .variable-pill:hover {
+        background-color: #4A00E0;
+        color: white;
+    }
+    
+    .editor-area {
+        min-height: 300px;
+        border-radius: 10px;
+        padding: 15px;
+        font-family: 'Courier New', monospace;
+        font-size: 1rem;
+        line-height: 1.6;
+        resize: vertical;
+    }
+    
+    .btn-editor {
+        background: linear-gradient(135deg, #4A00E0 0%, #8E2DE2 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 25px;
+        font-weight: 500;
+        color: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-editor:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(0,0,0,0.15);
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="editor-header">
+        <h2 class="mb-0"><i class="fas fa-edit me-2"></i> Visa Letter Template Editor</h2>
+        <p class="mb-0 mt-2">Customize the template used for visa support letters</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card editor-card mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i> Template Editor</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="mb-4">
+                            <label for="template_content" class="form-label">Template Content</label>
+                            <textarea class="form-control editor-area" id="template_content" name="template_content" rows="12">{{ template_content }}</textarea>
+                            <small class="form-text text-muted mt-2">Use variables from the sidebar by clicking on them or typing them manually.</small>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#previewModal">
+                                <i class="fas fa-eye me-2"></i> Preview
+                            </button>
+                            <button type="submit" class="btn btn-editor">
+                                <i class="fas fa-save me-2"></i> Save Template
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card editor-card">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="fas fa-tags me-2"></i> Available Variables</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="searchVariables" placeholder="Search variables...">
+                    </div>
+                    
+                    <div id="variablesList">
+                        <div class="variable-pill">{{ full_name }}</div>
+                        <div class="variable-pill">{{ passport_number }}</div>
+                        <div class="variable-pill">{{ country_of_origin }}</div>
+                        <div class="variable-pill">{{ date_of_birth }}</div>
+                        <div class="variable-pill">{{ address }}</div>
+                        <div class="variable-pill">{{ hackathon_name }}</div>
+                        <div class="variable-pill">{{ hackathon_location }}</div>
+                        <div class="variable-pill">{{ hackathon_start_date }}</div>
+                        <div class="variable-pill">{{ hackathon_end_date }}</div>
+                        <div class="variable-pill">{{ today_date }}</div>
+                        <div class="variable-pill">{{ organizer_name }}</div>
+                        <div class="variable-pill">{{ organizer_title }}</div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <div class="alert alert-info" role="alert">
+                            <i class="fas fa-info-circle me-2"></i> Click on a variable to insert it into the editor.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalLabel">Template Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-light p-4" id="previewContent">
+                <!-- Preview content will be shown here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add functionality for variable insertion and search
+    document.addEventListener('DOMContentLoaded', function() {
+        const templateTextarea = document.getElementById('template_content');
+        const variablePills = document.querySelectorAll('.variable-pill');
+        const searchBox = document.getElementById('searchVariables');
+        const previewBtn = document.querySelector('[data-bs-target="#previewModal"]');
+        const previewContent = document.getElementById('previewContent');
+        
+        // Insert variable on click
+        variablePills.forEach(pill => {
+            pill.addEventListener('click', function() {
+                const cursorPos = templateTextarea.selectionStart;
+                const textBefore = templateTextarea.value.substring(0, cursorPos);
+                const textAfter = templateTextarea.value.substring(cursorPos);
+                
+                templateTextarea.value = textBefore + this.textContent + textAfter;
+                templateTextarea.focus();
+                templateTextarea.selectionStart = cursorPos + this.textContent.length;
+                templateTextarea.selectionEnd = cursorPos + this.textContent.length;
+            });
+        });
+        
+        // Search variables
+        searchBox.addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            variablePills.forEach(pill => {
+                const variableText = pill.textContent.toLowerCase();
+                if (variableText.includes(searchTerm)) {
+                    pill.style.display = 'inline-block';
+                } else {
+                    pill.style.display = 'none';
+                }
+            });
+        });
+        
+        // Preview template
+        previewBtn.addEventListener('click', function() {
+            previewContent.innerHTML = templateTextarea.value
+                .replace(/{{([^}]+)}}/g, '<span class="badge bg-primary">$1</span>')
+                .replace(/\n/g, '<br>');
+        });
+    });
+</script>
+{% endblock %}

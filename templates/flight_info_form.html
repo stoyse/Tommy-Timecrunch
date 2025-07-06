@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .flight-form-header {
+        background: linear-gradient(135deg, #43C6AC 0%, #191654 100%);
+        padding: 25px;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .flight-card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .flight-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    
+    .form-control {
+        border-radius: 10px;
+        padding: 12px;
+        border: 1px solid #ced4da;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #43C6AC;
+        box-shadow: 0 0 0 0.25rem rgba(67, 198, 172, 0.25);
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #43C6AC 0%, #191654 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 25px;
+        font-weight: 500;
+        color: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(0,0,0,0.15);
+    }
+    
+    .flight-icon {
+        font-size: 1.2rem;
+        margin-right: 8px;
+        color: #43C6AC;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="flight-form-header">
+        <h2 class="mb-0"><i class="fas fa-plane me-2"></i> Submit Your Flight Information</h2>
+        <p class="mb-0 mt-2">Please provide your travel details for the upcoming hackathon</p>
+    </div>
+    
+    <div class="card flight-card">
+        <div class="card-body p-4">
+            <form method="POST" action="">
+                <div class="mb-4">
+                    <label for="flight_number" class="form-label">
+                        <i class="fas fa-passport flight-icon"></i>Flight Number
+                    </label>
+                    <input type="text" class="form-control" id="flight_number" name="flight_number" placeholder="e.g. AA1234" required>
+                    <small class="form-text text-muted">Enter your flight number as it appears on your ticket</small>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="departure_day" class="form-label">
+                        <i class="fas fa-calendar-alt flight-icon"></i>Departure Day
+                    </label>
+                    <input type="date" class="form-control" id="departure_day" name="departure_day" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="departure_airport" class="form-label">
+                        <i class="fas fa-plane-departure flight-icon"></i>Departure Airport Code
+                    </label>
+                    <input type="text" class="form-control" id="departure_airport" name="departure_airport" maxlength="4" required placeholder="e.g. JFK">
+                    <small class="form-text text-muted">Enter the 3-letter IATA code for your departure airport</small>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-submit">
+                        <i class="fas fa-paper-plane me-2"></i> Submit Flight Information
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

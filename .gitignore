@@ -1,0 +1,14 @@
+.env
+enmail_settings.json
+*.pyc
+__pycache__/
+instance/
+*.db
+credentials.json
+flask_session
+housing_images/
+static/uploads/
+venv
+email_settings.json
+email.log
+TODO.txt

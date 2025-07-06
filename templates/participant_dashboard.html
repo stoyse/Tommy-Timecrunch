@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .participant-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 40px;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    .hackathon-card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        margin-bottom: 25px;
+        overflow: hidden;
+    }
+    .hackathon-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    .hackathon-header {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .qr-code-container {
+        background-color: #ffffff;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        display: inline-block;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="participant-header">
+        <h1 class="display-4"><i class="fas fa-user-circle me-3"></i>{{ participant.name }}'s Dashboard</h1>
+        <p class="lead">Welcome back! Here are your event registrations.</p>
+    </div>
+
+    {% if registrations %}
+        {% for registration in registrations %}
+        <div class="hackathon-card">
+            <div class="hackathon-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">{{ registration.hackathon_name }}</h4>
+                    <span class="badge bg-primary p-2">{{ registration.hackathon_start_date }} - {{ registration.hackathon_end_date }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <p><strong>Ticket ID:</strong> {{ registration.ticket_id }}</p>
+                        <p><strong>Team:</strong> {{ registration.team_name if registration.team_name else 'Not specified' }}</p>
+                        <p><strong>Registered on:</strong> {{ registration.registered_at }}</p>
+                        <form method="POST" action="{{ url_for('participant_select_housing') }}" class="mt-3">
+                            <input type="hidden" name="hackathon_code" value="{{ registration.hackathon_code }}">
+                            <div class="mb-2">
+                                <label for="housing_id_{{ registration.id }}"><strong>Choose your housing:</strong></label>
+                                <select name="housing_id" id="housing_id_{{ registration.id }}" class="form-select" style="max-width: 350px; display: inline-block;">
+                                    <option value="">-- Select --</option>
+                                    {% for house in registration.housing_options %}
+                                        <option value="{{ house.id }}" {% if registration.house and registration.house == house.id|string %}selected{% endif %}>
+                                            {{ house.name }}{% if house.capacity %} (Capacity: {{ house.capacity }}){% endif %}
+                                            {% if house.address %} - {{ house.address }}{% endif %}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% if registration.house %}
+                                    <span class="badge bg-success ms-2">Selected</span>
+                                {% endif %}
+                            </div>
+                            <button type="submit" class="btn btn-outline-primary btn-sm">Save Housing</button>
+                        </form>
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <div class="qr-code-container">
+                            <div id="qr-code-{{ registration.ticket_id }}"></div>
+                        </div>
+                        <p class="mt-2 text-muted">Your personal ticket QR code</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+    <div class="text-center">
+        <h3>No Hackathon Registrations Found</h3>
+        <p>You have not registered for any hackathons yet.</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Explore Hackathons</a>
+    </div>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    {% if registrations %}
+        {% for registration in registrations %}
+            var qrCodeElement = document.getElementById("qr-code-{{ registration.ticket_id }}");
+            if (qrCodeElement) {
+                new QRCode(qrCodeElement, {
+                    text: "{{ registration.ticket_id }}",
+                    width: 128,
+                    height: 128,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+            }
+        {% endfor %}
+    {% endif %}
+});
+</script>
+{% endblock %}

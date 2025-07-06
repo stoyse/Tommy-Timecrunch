@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        padding: 60px 20px;
+        border-radius: 20px;
+        color: white;
+        margin-bottom: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 0 L100 100 L0 100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+        background-size: 100% 100%;
+    }
+    
+    .feature-card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.07);
+        transition: all 0.4s ease;
+        overflow: hidden;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+    }
+    
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        background: linear-gradient(135deg, #6a11cb10 0%, #2575fc15 100%);
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(5deg);
+        background: linear-gradient(135deg, #6a11cb15 0%, #2575fc25 100%);
+    }
+    
+    .cta-button {
+        padding: 15px 35px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 30px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
+    }
+    
+    .cta-button:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+    
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+        100% { transform: translateY(0px); }
+    }
+    
+    .float-animation {
+        animation: float 6s ease-in-out infinite;
+    }
+</style>
+
+<div class="hero-section text-center mb-5">
+    <h1 class="display-3 fw-bold mb-4" style="letter-spacing: -0.02em; text-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+        Welcome to Tommy Timecrunch
+    </h1>
+    <p class="lead fs-4 mb-5" style="max-width: 700px; margin: 0 auto; opacity: 0.9;">
+        The ultimate hackathon management platform that makes organizing events a breeze and participation seamless.
+    </p>
+    <div class="d-flex justify-content-center gap-3">
+        <a href="{{ url_for('dashboard_login') }}" class="btn btn-light cta-button">
+            <i class="fas fa-user-shield me-2"></i> Organizer Login
+        </a>
+        <a href="{{ url_for('participant_login') }}" class="btn btn-outline-light cta-button">
+            <i class="fas fa-laptop-code me-2"></i> Participant Login
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="feature-card h-100 text-center p-4">
+            <div class="card-body">
+                <div class="feature-icon float-animation" style="color: var(--apple-blue);">
+                    <i class="fas fa-tasks" style="font-size: 2.5rem;"></i>
+                </div>
+                <h4 class="fw-semibold mb-3">Effortless Organization</h4>
+                <p class="text-muted">Streamline hackathon planning with customizable checklists, participant management, and communication tools.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-card h-100 text-center p-4">
+            <div class="card-body">
+                <div class="feature-icon float-animation" style="color: var(--apple-blue); animation-delay: 1s;">
+                    <i class="fas fa-plane" style="font-size: 2.5rem;"></i>
+                </div>
+                <h4 class="fw-semibold mb-3">Travel Management</h4>
+                <p class="text-muted">Track participant flights, generate visa support letters, and coordinate housing arrangements effortlessly.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-card h-100 text-center p-4">
+            <div class="card-body">
+                <div class="feature-icon float-animation" style="color: var(--apple-blue); animation-delay: 2s;">
+                    <i class="fas fa-ticket-alt" style="font-size: 2.5rem;"></i>
+                </div>
+                <h4 class="fw-semibold mb-3">Ticket Verification</h4>
+                <p class="text-muted">Issue and verify tickets with our QR code system for smooth check-ins and secure event access.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card p-5 mb-5 bg-light border-0" style="border-radius: 20px;">
+    <div class="row align-items-center">
+        <div class="col-md-7">
+            <h3 class="fw-bold mb-4">Ready to host your next hackathon?</h3>
+            <p class="text-muted mb-4">Create an account today and discover how Tommy Timecrunch can transform your event management experience.</p>
+            <a href="{{ url_for('create_hackathon') }}" class="btn btn-primary cta-button">
+                <i class="fas fa-rocket me-2"></i> Create Hackathon
+            </a>
+        </div>
+        <div class="col-md-5 text-center">
+            <img src="https://via.placeholder.com/400x300" alt="Hackathon Management" class="img-fluid rounded-3" style="max-height: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-lg-4">
+        <div class="card border-0 bg-light h-100" style="border-radius: 15px;">
+            <div class="card-body p-4 text-center">
+                <div class="mb-3">
+                    <i class="fas fa-users text-primary" style="font-size: 2rem;"></i>
+                </div>
+                <h4 class="fw-semibold mb-3">For Organizers</h4>
+                <p class="text-muted mb-0">Powerful tools to manage participants, track progress, and ensure your hackathon runs smoothly.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-0 bg-light h-100" style="border-radius: 15px;">
+            <div class="card-body p-4 text-center">
+                <div class="mb-3">
+                    <i class="fas fa-laptop-code text-primary" style="font-size: 2rem;"></i>
+                </div>
+                <h4 class="fw-semibold mb-3">For Participants</h4>
+                <p class="text-muted mb-0">Simplified registration, flight submissions, and everything needed for a great hackathon experience.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-0 bg-light h-100" style="border-radius: 15px;">
+            <div class="card-body p-4 text-center">
+                <div class="mb-3">
+                    <i class="fas fa-chart-line text-primary" style="font-size: 2rem;"></i>
+                </div>
+                <h4 class="fw-semibold mb-3">Analytics</h4>
+                <p class="text-muted mb-0">Gain insights into your hackathon with detailed analytics and participant data.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mb-5">
+    <h3 class="fw-bold mb-4">Join the Tommy Timecrunch Community</h3>
+    <a href="{{ url_for('about') }}" class="btn btn-outline-primary btn-lg cta-button">
+        <i class="fas fa-info-circle me-2"></i> Learn More About Us
+    </a>
+</div>
+{% endblock %}

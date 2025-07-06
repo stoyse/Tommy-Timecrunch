@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .housing-header {
+        background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+        padding: 25px;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .housing-card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .housing-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    
+    .form-control {
+        border-radius: 10px;
+        padding: 12px;
+        border: 1px solid #ced4da;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #2193b0;
+        box-shadow: 0 0 0 0.25rem rgba(33, 147, 176, 0.25);
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+    
+    .housing-icon {
+        font-size: 1.2rem;
+        margin-right: 8px;
+        color: #2193b0;
+    }
+    
+    .btn-housing {
+        background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 25px;
+        font-weight: 500;
+        color: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-housing:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(0,0,0,0.15);
+    }
+    
+    .file-upload {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    
+    .file-upload-input {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+    
+    .file-upload-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        z-index: 1;
+        height: 100%;
+        padding: 12px;
+        background-color: #f8f9fa;
+        border: 1px dashed #ced4da;
+        border-radius: 10px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+    
+    .file-upload:hover .file-upload-btn {
+        background-color: #e9ecef;
+        border-color: #2193b0;
+    }
+    
+    .file-name {
+        margin-top: 10px;
+        color: #6c757d;
+        font-size: 0.875rem;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="housing-header">
+        <h2 class="mb-0"><i class="fas fa-home me-2"></i> Add Housing Location</h2>
+        <p class="mb-0 mt-2">Provide details about the housing option for hackathon participants</p>
+    </div>
+    
+    <div class="card housing-card">
+        <div class="card-body p-4">
+            <form method="POST" enctype="multipart/form-data">
+                <div class="mb-4">
+                    <label for="name" class="form-label">
+                        <i class="fas fa-building housing-icon"></i>Housing Name
+                    </label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                    <small class="form-text text-muted">Enter the name of the housing location (hotel, dormitory, etc.)</small>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="description" class="form-label">
+                        <i class="fas fa-align-left housing-icon"></i>Description
+                    </label>
+                    <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                    <small class="form-text text-muted">Provide details about amenities, room types, etc.</small>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="address" class="form-label">
+                        <i class="fas fa-map-marker-alt housing-icon"></i>Address
+                    </label>
+                    <input type="text" class="form-control" id="address" name="address" required>
+                    <small class="form-text text-muted">Enter the complete address of the housing location</small>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="capacity" class="form-label">
+                        <i class="fas fa-users housing-icon"></i>Capacity
+                    </label>
+                    <input type="number" class="form-control" id="capacity" name="capacity" min="1" placeholder="Enter maximum number of participants">
+                    <small class="form-text text-muted">Maximum number of participants this housing can accommodate (leave empty for unlimited)</small>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label">
+                        <i class="fas fa-image housing-icon"></i>Housing Image
+                    </label>
+                    <div class="file-upload">
+                        <input type="file" id="image" name="image" accept="image/*" required class="file-upload-input">
+                        <div class="file-upload-btn" id="upload-btn">
+                            <i class="fas fa-cloud-upload-alt mb-2" style="font-size: 2rem; color: #6c757d;"></i>
+                            <span>Drop your image here or click to browse</span>
+                            <div class="file-name" id="file-name"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ url_for('dashboard_view') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                    </a>
+                    <button type="submit" class="btn btn-housing">
+                        <i class="fas fa-plus-circle me-2"></i> Add Housing
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('image');
+        const fileName = document.getElementById('file-name');
+        const uploadBtn = document.getElementById('upload-btn');
+        
+        fileInput.addEventListener('change', function() {
+            if (fileInput.files.length > 0) {
+                fileName.textContent = fileInput.files[0].name;
+                uploadBtn.style.borderStyle = 'solid';
+                uploadBtn.style.borderColor = '#2193b0';
+            } else {
+                fileName.textContent = '';
+                uploadBtn.style.borderStyle = 'dashed';
+                uploadBtn.style.borderColor = '#ced4da';
+            }
+        });
+    });
+</script>
+{% endblock %}

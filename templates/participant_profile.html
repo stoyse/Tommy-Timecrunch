@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, #3494E6 0%, #EC6EAD 100%);
+        padding: 25px;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .profile-card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    
+    .info-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .info-value {
+        font-weight: 500;
+        margin-bottom: 12px;
+    }
+    
+    .flight-details {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 15px 0;
+        border-left: 4px solid #3494E6;
+    }
+    
+    .ticket-section {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 15px 0;
+        border-left: 4px solid #3494E6;
+        text-align: center;
+    }
+    
+    .qr-container {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="profile-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="mb-0"><i class="fas fa-user-circle me-2"></i> Participant Profile</h2>
+            <span class="badge bg-light text-dark p-2">ID: {{ participant.id }}</span>
+        </div>
+    </div>
+    
+    <div class="card profile-card">
+        <div class="card-header bg-transparent">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">{{ participant.name }}</h4>
+                <a href="mailto:{{ participant.email }}" class="btn btn-primary">
+                    <i class="fas fa-envelope me-2"></i> Contact Participant
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <div class="info-label"><i class="fas fa-envelope me-2"></i>Email</div>
+                        <div class="info-value">{{ participant.email }}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="info-label"><i class="fas fa-phone me-2"></i>Phone</div>
+                        <div class="info-value">{{ participant.phone or '—' }}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="info-label"><i class="fas fa-users me-2"></i>Team Name</div>
+                        <div class="info-value">{{ participant.team_name or '—' }}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="info-label"><i class="fas fa-code me-2"></i>Skills</div>
+                        <div class="info-value">{{ participant.skills or '—' }}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="info-label"><i class="fas fa-star me-2"></i>Experience Level</div>
+                        <div class="info-value">{{ participant.experience_level or '—' }}</div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <div class="info-label"><i class="fas fa-lightbulb me-2"></i>Interests</div>
+                        <div class="info-value">{{ participant.interests or '—' }}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="info-label"><i class="fas fa-utensils me-2"></i>Dietary Restrictions</div>
+                        <div class="info-value">{{ participant.dietary_restrictions or '—' }}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="info-label"><i class="fas fa-tshirt me-2"></i>T-shirt Size</div>
+                        <div class="info-value">{{ participant.tshirt_size or '—' }}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="info-label"><i class="fas fa-ambulance me-2"></i>Emergency Contact</div>
+                        <div class="info-value">{{ participant.emergency_contact or '—' }}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="info-label"><i class="fas fa-envelope-open me-2"></i>Newsletter</div>
+                        <div class="info-value">{{ participant.newsletter or '—' }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <div class="info-label"><i class="fas fa-file-contract me-2"></i>Code of Conduct</div>
+                <div class="info-value">{{ participant.code_of_conduct or '—' }}</div>
+            </div>
+            
+            <!-- Ticket Information -->
+            {% if participant.ticket_id %}
+            <div class="card mt-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="fas fa-ticket-alt me-2"></i> Ticket Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="ticket-section">
+                        <div class="qr-container">
+                            <img src="{{ url_for('generate_ticket_qr', ticket_id=participant.ticket_id) }}" 
+                                alt="Ticket QR Code" class="img-fluid" style="max-width: 200px;">
+                        </div>
+                        <div class="info-label">Ticket ID</div>
+                        <div class="info-value">{{ participant.ticket_id }}</div>
+                        
+                        <div class="mt-3">
+                            {% if participant.checked_in %}
+                            <span class="badge bg-success p-2">
+                                <i class="fas fa-check-circle me-1"></i> Checked In
+                            </span>
+                            {% else %}
+                            <span class="badge bg-warning p-2">
+                                <i class="fas fa-clock me-1"></i> Not Checked In
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Travel Information Section -->
+            <div class="card mt-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="fas fa-plane me-2"></i> Travel Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="info-label">Flight Number</div>
+                            <div class="info-value">{{ participant.flight_number or '—' }}</div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="info-label">Departure Day</div>
+                            <div class="info-value">{{ participant.departure_day or '—' }}</div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="info-label">Departure Airport</div>
+                            <div class="info-value">{{ participant.departure_airport or '—' }}</div>
+                        </div>
+                    </div>
+                    
+                    {% if flight_info %}
+                    <div class="flight-details">
+                        <h6 class="mb-3"><i class="fas fa-info-circle me-2"></i>Flight Details</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="info-label">From</div>
+                                <div class="info-value">
+                                    {% if flight_info.departure and flight_info.departure.airport %}
+                                        {{ flight_info.departure.airport.name }} ({{ flight_info.departure.airport.iata }})
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </div>
+                                <div class="info-label">To</div>
+                                <div class="info-value">
+                                    {% if flight_info.arrival and flight_info.arrival.airport %}
+                                        {{ flight_info.arrival.airport.name }} ({{ flight_info.arrival.airport.iata }})
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-label">Scheduled Departure</div>
+                                <div class="info-value">
+                                    {% if flight_info.departure and (flight_info.departure.scheduledTimeLocal or flight_info.departure.scheduledTimeUtc) %}
+                                        {{ flight_info.departure.scheduledTimeLocal or flight_info.departure.scheduledTimeUtc }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </div>
+                                <div class="info-label">Scheduled Arrival</div>
+                                <div class="info-value">
+                                    {% if flight_info.arrival and (flight_info.arrival.scheduledTimeLocal or flight_info.arrival.scheduledTimeUtc) %}
+                                        {{ flight_info.arrival.scheduledTimeLocal or flight_info.arrival.scheduledTimeUtc }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% if flight_info.status %}
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <div class="info-label">Status</div>
+                                <div class="info-value">{{ flight_info.status }}</div>
+                            </div>
+                            <div class="col-md-6">
+                                {% if flight_info.aircraft and flight_info.aircraft.model %}
+                                <div class="info-label">Aircraft</div>
+                                <div class="info-value">{{ flight_info.aircraft.model }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if flight_map_url %}
+                        <div class="mt-3">
+                            <div class="card">
+                                <div class="card-body p-2">
+                                    <img src="{{ flight_map_url }}" alt="Flight Map" class="img-fluid rounded" style="width:100%;">
+                                </div>
+                            </div>
+                        </div>
+                        {% elif flight_info.departure and flight_info.arrival and flight_info.departure.airport and flight_info.arrival.airport and flight_info.departure.airport.lat and flight_info.departure.airport.lon and flight_info.arrival.airport.lat and flight_info.arrival.airport.lon %}
+                        <div class="mt-3">
+                            <div class="card">
+                                <div class="card-body p-2">
+                                    <img src="https://static-maps.yandex.ru/1.x/?l=map&pt={{ flight_info.departure.airport.lon }},{{ flight_info.departure.airport.lat }},pm2blm~{{ flight_info.arrival.airport.lon }},{{ flight_info.arrival.airport.lat }},pm2grm&pl={{ flight_info.departure.airport.lon }},{{ flight_info.departure.airport.lat }},{{ flight_info.arrival.airport.lon }},{{ flight_info.arrival.airport.lat }}&size=650,250" alt="Flight Map" class="img-fluid rounded" style="width:100%;">
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <div class="info-label"><i class="fas fa-calendar-alt me-2"></i>Registered At</div>
+                <div class="info-value">{{ participant.registered_at }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
