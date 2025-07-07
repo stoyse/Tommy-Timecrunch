@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="alert alert-success">
+        <h2 class="mb-3"><i class="fas fa-rocket me-2"></i> Hackathon Created!</h2>
+        <p>Your hackathon <strong>{{ hackathon[2] if hackathon else hackathon_name }}</strong> has been created successfully.</p>
+        <p><strong>Management Code:</strong> <span class="badge bg-primary">{{ code }}</span></p>
+        <p>Share this code with your team to manage the event.</p>
+        <a href="{{ url_for('dashboard_view', code=code) }}" class="btn btn-success mt-3">
+            <i class="fas fa-tachometer-alt me-2"></i> Go to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

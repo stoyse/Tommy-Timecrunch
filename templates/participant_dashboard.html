@@ -75,6 +75,24 @@
                                 {% endif %}
                             </div>
                             <button type="submit" class="btn btn-outline-primary btn-sm">Save Housing</button>
+        </form>
+
+        <!-- Checklist Section -->
+        <div class="mt-4">
+            <h6 class="mb-2"><i class="fas fa-tasks me-2"></i>General Checklist</h6>
+            {% if registration.checklist_items and registration.checklist_items|length > 0 %}
+                <ul class="list-group">
+                    {% for item in registration.checklist_items %}
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>{{ item.item_description }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="text-muted">No checklist items for this hackathon.</div>
+            {% endif %}
+        </div>
+        <!-- End Checklist Section -->
                         </form>
                     </div>
                     <div class="col-md-6 text-center">

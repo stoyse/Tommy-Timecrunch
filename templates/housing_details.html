@@ -91,7 +91,7 @@
                             <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
                         </a>
                         <div>
-                            <a href="{{ url_for('qr_scanner') }}" class="btn btn-outline-info action-btn me-2">
+                            <a href="{{ url_for('dashboard_view', code=hackathon.code) }}#scanner" class="btn btn-outline-info action-btn me-2">
                                 <i class="fas fa-qrcode me-2"></i> Scan QR Code
                             </a>
                             <a href="{{ url_for('housing.edit_housing', housing_id=house.id) }}" class="btn btn-outline-primary action-btn me-2">
@@ -123,11 +123,12 @@
             </div>
             
             <div class="card housing-card">
-                <div class="card-header bg-transparent">
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i> Statistics</h5>
+                    <span class="badge bg-primary">{{ assigned_count }} / {{ house.capacity if house.capacity else '∞' }} assigned</span>
                 </div>
                 <div class="card-body">
-                    <div class="row text-center">
+                    <div class="row text-center mb-3">
                         <div class="col-6 mb-3">
                             <div class="fs-2 fw-bold text-primary">{{ assigned_count }}</div>
                             <div class="text-muted small">Assigned Participants</div>
@@ -137,6 +138,24 @@
                             <div class="text-muted small">Total Capacity</div>
                         </div>
                     </div>
+                    <hr>
+                    <h6 class="mb-2"><i class="fas fa-users me-2"></i> Who Booked This Stay</h6>
+                    {% if assigned_participants and assigned_participants|length > 0 %}
+                        <ul class="list-group">
+                            {% for p in assigned_participants %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-user-circle me-2 text-info"></i>
+                                        <strong>{{ p['name'] }}</strong>
+                                        <span class="text-muted small">({{ p['email'] }})</span>
+                                        {% if p['team_name'] %}<span class="badge bg-secondary ms-2">Team: {{ p['team_name'] }}</span>{% endif %}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="text-muted text-center">No participants have booked this stay yet.</div>
+                    {% endif %}
                 </div>
             </div>
         </div>

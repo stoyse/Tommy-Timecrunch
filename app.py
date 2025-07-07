@@ -305,10 +305,10 @@ def create_hackathon_post():
         prize_pool = request.form['prize_pool']
         rules = request.form['rules']
         contact_email = request.form['contact_email']
-        
+
         # Generate unique code
         code = generate_hackathon_code()
-        
+
         # Insert into database
         conn = sqlite3.connect('hackathons.db')
         cursor = conn.cursor()
@@ -318,22 +318,26 @@ def create_hackathon_post():
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (code, name, description, start_date, end_date, location, 
               max_participants, prize_pool, rules, contact_email))
-        
+
         conn.commit()
         conn.close()
 
-        # Send email notification to organizer
-        email_subject = f"Your Hackathon '{name}' Has Been Created!"
-        email_body = render_template('email/hackathon_created.html', 
-                                     hackathon_name=name, 
-                                     hackathon_code=code, 
-                                     dashboard_link=url_for('dashboard_view', _external=True))
-        send_email(contact_email, email_subject, email_body)
-        
+        # Send email notification to organizer (optional, do not fail if email fails)
+        try:
+            email_subject = f"Your Hackathon '{name}' Has Been Created!"
+            email_body = render_template('email/hackathon_created.html', 
+                                         hackathon_name=name, 
+                                         hackathon_code=code, 
+                                         dashboard_link=url_for('dashboard_view', _external=True))
+            send_email(contact_email, email_subject, email_body)
+        except Exception as email_exc:
+            print("[WARN] Could not send hackathon created email:", email_exc)
+
         flash(f'Hackathon created successfully! Your code is: {code}', 'success')
         return redirect(url_for('hackathon_created', code=code))
-        
+
     except Exception as e:
+        print("[ERROR] Create hackathon error:", e)
         flash(f'Error creating hackathon: {str(e)}', 'error')
         return redirect(url_for('create_hackathon'))
 
@@ -1176,6 +1180,7 @@ def participant_dashboard():
 
     # For each registration, fetch available housing for that hackathon
     registrations = []
+    checklist_items_by_hackathon = {}
     for reg in registrations_data:
         # Fetch housing options for this hackathon
         cursor2 = get_db_connection().cursor()
@@ -1184,6 +1189,10 @@ def participant_dashboard():
             {'id': row[0], 'name': row[1], 'description': row[2], 'image_url': row[3], 'address': row[4], 'capacity': row[5]}
             for row in cursor2.fetchall()
         ]
+        # Fetch checklist items for this hackathon
+        cursor2.execute("SELECT id, item_description FROM hackathon_checklist_items WHERE hackathon_code = ?", (reg[1],))
+        checklist_items = [{'id': row[0], 'item_description': row[1]} for row in cursor2.fetchall()]
+        checklist_items_by_hackathon[reg[1]] = checklist_items
         cursor2.connection.close()
         registrations.append({
             'id': reg[0],
@@ -1206,7 +1215,8 @@ def participant_dashboard():
             'hackathon_name': reg[17],
             'hackathon_start_date': reg[18],
             'hackathon_end_date': reg[19],
-            'housing_options': housing_options
+            'housing_options': housing_options,
+            'checklist_items': checklist_items
         })
 
     # Assuming the primary participant details are the same across registrations,

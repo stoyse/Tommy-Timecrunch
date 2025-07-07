@@ -165,12 +165,15 @@ def housing_details(housing_id):
         flash('Housing not found', 'error')
         return redirect(url_for('dashboard_view', code=code))
     
-    # Get assigned participants count
+    # Get assigned participants count and list
     cursor.execute('SELECT COUNT(id) as count FROM participants WHERE house = ? AND hackathon_code = ?', (housing_id, code))
     assigned_count = cursor.fetchone()['count']
-    
+
+    cursor.execute('SELECT name, email, team_name FROM participants WHERE house = ? AND hackathon_code = ?', (housing_id, code))
+    assigned_participants = cursor.fetchall()
+
     conn.close()
-    
+
     house = dict(house_row)
     if house.get('created_at'):
         try:
@@ -178,4 +181,4 @@ def housing_details(housing_id):
         except (ValueError, TypeError):
             pass
 
-    return render_template('housing_details.html', house=house, code=code, hackathon=hackathon, assigned_count=assigned_count)
+    return render_template('housing_details.html', house=house, code=code, hackathon=hackathon, assigned_count=assigned_count, assigned_participants=assigned_participants)
